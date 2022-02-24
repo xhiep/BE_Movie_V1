@@ -13,7 +13,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/api/v1', rootRouter);
 app.use(bodyParser.urlencoded({ extended: true }))
 app.get('/', (req, res) => {
-    res.send("HELLO")
+    res.send(`HELLO ${PORT}`)
 })
 app.listen(PORT, async () => {
     console.log(`http://localhost:${PORT}`);
