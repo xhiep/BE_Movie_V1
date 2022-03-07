@@ -46,6 +46,9 @@ const getDetails = async (req, res) => {
 const deleteTypeUser = async (req, res) => {
     const { id } = req.params;
     try {
+        if (id == 1 || id == 2) {
+            res.status(403).send("Bạn Không được xóa Loại Người Dùng này");
+        }
         await TypeUser.destroy({
             where: {
                 id
@@ -60,6 +63,9 @@ const update = async (req, res) => {
     const { nameType, type } = req.body;
     try {
         const typeUserUpdate = req.details;
+        if (typeUserUpdate.id == 1 || typeUserUpdate.id == 2) {
+            res.status(403).send("Bạn Không được cập nhật Loại Người Dùng này");
+        }
         typeUserUpdate.nameType = nameType;
         typeUserUpdate.type = type;
         await typeUserUpdate.save();

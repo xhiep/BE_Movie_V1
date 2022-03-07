@@ -1,5 +1,5 @@
 const { Rooms, Cinemas } = require('../models');
-
+const { Op } = require('sequelize');
 const create = async (req, res) => {
     const { roomName, idCinema, maxSeat } = req.body;
     try {
@@ -10,8 +10,48 @@ const create = async (req, res) => {
     }
 }
 const getAll = async (req, res) => {
+    const { name } = req.query;
     try {
-        const lstRoom = await Rooms.findAll({
+        let lstRoom;
+        if (name) {
+            lstRoom = await Rooms.findAll({
+                where: {
+                    roomName: {
+                        [Op.like]: `%${name}%`
+                    }
+                },
+                include: [
+                    {
+                        model: Cinemas,
+                        as: 'cinema_room'
+                    }
+                ]
+            });
+        } else {
+            lstRoom = await Rooms.findAll({
+                include: [
+                    {
+                        model: Cinemas,
+                        as: 'cinema_room'
+                    }
+                ]
+            });
+        }
+        lstRoom.forEach(element => {
+            element.idCinema = undefined;
+        });
+        res.status(200).send(lstRoom);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+const getRoomByIDCinema = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await Rooms.findAll({
+            where: {
+                idCinema: id
+            },
             include: [
                 {
                     model: Cinemas,
@@ -19,10 +59,10 @@ const getAll = async (req, res) => {
                 }
             ]
         });
-        lstRoom.forEach(element => {
+        result.forEach(element => {
             element.idCinema = undefined;
         });
-        res.status(200).send(lstRoom);
+        res.status(200).send(result);
     } catch (error) {
         res.status(500).send(error);
     }
@@ -100,5 +140,6 @@ module.exports = {
     getAll,
     getDetails,
     deleteRoom,
-    update
+    update,
+    getRoomByIDCinema
 }

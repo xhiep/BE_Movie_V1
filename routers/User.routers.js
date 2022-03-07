@@ -12,7 +12,7 @@ userRouter.post('/signIn', signIn);
 userRouter.put('/:id', authentication, checkExists(Users), uploadImage('avatar'), updateUser);
 userRouter.put('/block/:id', authentication, authorize, checkExists(Users), BlockAndUnBlock);
 userRouter.get('/', authentication, authorize, getAllUser);
-userRouter.get('/:id', authentication, authorize, checkExists(Users), getDetailsUser);
+userRouter.get('/:id', authentication, checkExists(Users), getDetailsUser);
 userRouter.delete('/:id', authentication, authorize, checkExists(Users), deleteUser);
 module.exports = {
     userRouter

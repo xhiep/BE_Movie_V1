@@ -13,7 +13,7 @@ module.exports = {
         allowNull: false
       },
       price: {
-        type: Sequelize.FLOAT,
+        type: Sequelize.STRING,
         allowNull: false
       },
       bookded: {

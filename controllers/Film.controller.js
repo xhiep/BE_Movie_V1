@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
-const { Films } = require('../models');
-const { PORT } = require('../utils/util');
+const { Films, sequelize } = require('../models');
+const { QueryTypes } = require('sequelize');
 
 
 const create = async (req, res) => {
@@ -49,6 +49,33 @@ const getDetails = async (req, res) => {
         res.status(500).send(error);
     }
 }
+
+const getFilmByIDCinema = async (req, res) => {
+    const { id } = req.params;
+    try {
+        sequelize.query(`
+            select distinct  films.id as idFilm,  films.nameFilm , films.imgFilm 
+            from films 
+            inner join showtimes on films.id = showtimes.idFilm
+            where showtimes.idCinema = ${id}`, { type: QueryTypes.SELECT })
+            .then(async (data) => {
+                let hacks = []
+                for (const d of data) {
+                    const lstShowDate = await sequelize.query(`select showtimes.id,  showDate
+                    from showtimes 
+                    inner join films on films.id = showtimes.idFilm
+                    inner join cinemas on cinemas.id = showtimes.idCinema
+                    where cinemas.id = ${id} and films.id = ${d.idFilm}`, { type: QueryTypes.SELECT });
+                    d.lstShowDate = lstShowDate;
+                    hacks = [...hacks, d]
+                }
+                res.status(200).send(hacks)
+            })
+
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
 const deleteFilm = async (req, res) => {
     try {
         const filmDel = req.details;
@@ -92,5 +119,6 @@ module.exports = {
     getAll,
     getDetails,
     deleteFilm,
-    updateFilm
+    updateFilm,
+    getFilmByIDCinema
 }

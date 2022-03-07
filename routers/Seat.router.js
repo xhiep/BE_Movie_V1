@@ -7,7 +7,7 @@ const { create, getByIdShowTime } = require('../controllers/Seat.controller');
 
 const seatRouter = express.Router();
 seatRouter.post('/', authentication, authorize, create);
-seatRouter.get('/:id', authentication, getByIdShowTime);
+seatRouter.get('/', authentication, getByIdShowTime);
 
 module.exports = {
     seatRouter

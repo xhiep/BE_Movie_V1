@@ -1,13 +1,12 @@
 const { GroupCinemas, Cinemas } = require('../models');
-const { PORT } = require('../utils/util');
+const { Op } = require('sequelize');
 
 const create = async (req, res) => {
     const { file, body } = req;
-    const data = JSON.parse(body.dataCinema);
-    const { idGroupCinema, name, address } = data;
+    const { idGroupCinema, name, address } = body;
     try {
         if (file?.path) {
-            const logo = `localhost:${PORT}/${file.path}`
+            const logo = await file.path.replace(/\\/g, '/')
             const newCinema = await Cinemas.create({ idGroupCinema, name, address, logo });
             res.status(201).send({
                 message: "Thêm  rạp thành công",
@@ -21,8 +20,48 @@ const create = async (req, res) => {
     }
 }
 const getAll = async (req, res) => {
+    const { tenRap } = req.query;
+    try {
+        let lstCinemas;
+        if (tenRap) {
+            lstCinemas = await Cinemas.findAll({
+                where: {
+                    name: {
+                        [Op.like]: `%${tenRap}%`
+                    }
+                },
+                include: [
+                    {
+                        model: GroupCinemas,
+                        as: 'group'
+                    }
+                ]
+            });
+        } else {
+            lstCinemas = await Cinemas.findAll({
+                include: [
+                    {
+                        model: GroupCinemas,
+                        as: 'group'
+                    }
+                ]
+            });
+        }
+        lstCinemas.forEach(element => {
+            element.idGroupCinema = undefined;
+        });
+        res.status(200).send(lstCinemas);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+const getAllByIdGroupCinema = async (req, res) => {
+    const { id } = req.params;
     try {
         const lstCinemas = await Cinemas.findAll({
+            where: {
+                idGroupCinema: id,
+            },
             include: [
                 {
                     model: GroupCinemas,
@@ -35,7 +74,7 @@ const getAll = async (req, res) => {
         });
         res.status(200).send(lstCinemas);
     } catch (error) {
-        res.status(500).send(error);
+        res.status(500).send(error)
     }
 }
 const getDetails = async (req, res) => {
@@ -80,37 +119,38 @@ const deleteCinemas = async (req, res) => {
     }
 }
 const update = async (req, res) => {
-    const { file, body, details } = req;
+    const { file, body } = req;
     const { id } = req.params;
-    const data = JSON.parse(body.dataCinema);
-    const { idGroupCinema, name, address } = data;
+    const { idGroupCinema, name, address } = body;
     try {
-        if (file?.path) {
-            const logo = `localhost:${PORT}/${file.path}`
-            details.idGroupCinema = idGroupCinema;
-            details.name = name;
-            details.address = address;
-            details.logo = logo;
-            await details.save();
-            const updated = await Cinemas.findOne({
-                where: {
-                    id
-                },
-                include: [
-                    {
-                        model: GroupCinemas,
-                        as: 'group'
-                    }
-                ]
-            });
-            updated.idGroupCinema = undefined;
-            res.status(200).send({
-                message: "Cập nhật thành công",
-                data: updated
-            })
+        const cinemaUpdate = req.details;
+        let logo;
+        if (!file) {
+            logo = cinemaUpdate.logo;
         } else {
-            res.status(403).send("Bạn cần gửi ảnh");
+            logo = file.path.replace(/\\/g, '/');
         }
+        cinemaUpdate.idGroupCinema = idGroupCinema;
+        cinemaUpdate.name = name;
+        cinemaUpdate.address = address;
+        cinemaUpdate.logo = logo;
+        await cinemaUpdate.save();
+        const updated = await Cinemas.findOne({
+            where: {
+                id
+            },
+            include: [
+                {
+                    model: GroupCinemas,
+                    as: 'group'
+                }
+            ]
+        });
+        updated.idGroupCinema = undefined;
+        res.status(200).send({
+            message: "Cập nhật thành công",
+            data: updated
+        })
     } catch (error) {
         res.status(500).send(error);
     }
@@ -120,5 +160,6 @@ module.exports = {
     getAll,
     getDetails,
     deleteCinemas,
-    update
+    update,
+    getAllByIdGroupCinema
 }

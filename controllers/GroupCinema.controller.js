@@ -3,11 +3,10 @@ const { PORT } = require('../utils/util');
 
 const create = async (req, res) => {
     const { file, body } = req;
-    const data = JSON.parse(body.dataGrCinema);
-    const { groupName } = data;
+    const { groupName } = body;
     try {
         if (file?.path) {
-            const logo = `localhost:${PORT}/${file.path}`
+            const logo = await file.path.replace(/\\/g, '/');
             const newGroupCinema = await GroupCinemas.create({ groupName, logo });
             res.status(201).send({
                 message: "Thêm Rạp Chiếu thành công",
@@ -49,21 +48,22 @@ const deleteGrCinemas = async (req, res) => {
 }
 const update = async (req, res) => {
     const { file, body, details } = req;
-    const data = JSON.parse(body.dataGrCinema);
-    const { groupName } = data;
+    const { groupName } = body;
     try {
-        if (file?.path) {
-            const logo = `localhost:${PORT}/${file.path}`
-            details.groupName = groupName;
-            details.logo = logo;
-            await details.save();
-            res.status(201).send({
-                message: "Thêm Cụm Rạp Chiếu thành công",
-                data: details
-            })
+        const groupCinemaUpdate = req.details;
+        let logo;
+        if (!file) {
+            logo = groupCinemaUpdate.logo;
         } else {
-            res.status(403).send("Bạn cần gửi ảnh lên để thêm cụm rạp chiếu");
+            logo = file.path.replace(/\\/g, '/');
         }
+        groupCinemaUpdate.logo = logo;
+        groupCinemaUpdate.groupName = groupName;
+        await groupCinemaUpdate.save();
+        res.status(200).send({
+            message: "Cập nhập Cụm Rạp thành công",
+            data: groupCinemaUpdate
+        })
     } catch (error) {
         res.status(500).send(error);
     }
