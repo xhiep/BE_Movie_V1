@@ -29,7 +29,8 @@ module.exports = (sequelize, DataTypes) => {
     bookded: {
       defaultValue: false,
       type: DataTypes.BOOLEAN
-    }
+    },
+    isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Seats',

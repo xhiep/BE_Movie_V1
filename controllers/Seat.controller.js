@@ -30,7 +30,28 @@ const create = async (req, res) => {
         res.status(500).send(error);
     }
 }
-
+const update = async (req, res) => {
+    const { idShowTime, price } = req.body;
+    try {
+        const lstSeat = await sequelize.query(`
+            update seats set price  = ${price} where idShowTime = ${idShowTime}
+        `, { type: QueryTypes.UPDATE });
+        res.status(200).send(lstSeat)
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+const details = async (req, res) => {
+    const { idShowTime } = req.query;
+    try {
+        const seats = await sequelize.query(`
+            select distinct price  from seats where idShowTime =${idShowTime}`
+            , { type: QueryTypes.SELECT });
+        res.status(200).send(seats[0]);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
 const getByIdShowTime = async (req, res) => {
     const { id } = req.query;
     try {
@@ -41,21 +62,12 @@ const getByIdShowTime = async (req, res) => {
         inner join groupcinemas on groupcinemas.id =  cinemas.idGroupCinema)
         where showtimes.id = ${id}`, { type: QueryTypes.SELECT });
 
-        const lstSeat = await Seats.findAll({
-            where: {
-                idShowTime: id
-            },
-            include: [
-                {
-                    model: Users,
-                    as: 'idUsers'
-                }
-
-            ]
-        });
-        lstSeat.forEach(element => {
-            element.idUser = undefined;
-        });
+        const lstSeat = await sequelize.query(`
+        select seats.id , seatName , price , bookded , seats.idRoom , idUser , idShowTime 
+        from ((seats
+        inner join showtimes on showtimes.id = seats.idShowTime)
+        inner join rooms on rooms.id = showtimes.idRoom) 
+        where showtimes.id = ${id} and  rooms.isActive = true`, { type: QueryTypes.SELECT })
         const phongVe = {
             film: film[0],
             lstGhe: lstSeat
@@ -68,5 +80,7 @@ const getByIdShowTime = async (req, res) => {
 
 module.exports = {
     create,
+    update,
+    details,
     getByIdShowTime
 }

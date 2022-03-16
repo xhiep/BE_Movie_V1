@@ -28,7 +28,8 @@ const getAll = async (req, res) => {
                 where: {
                     name: {
                         [Op.like]: `%${tenRap}%`
-                    }
+                    },
+                    isActive: true
                 },
                 include: [
                     {
@@ -39,6 +40,9 @@ const getAll = async (req, res) => {
             });
         } else {
             lstCinemas = await Cinemas.findAll({
+                where: {
+                    isActive: true
+                },
                 include: [
                     {
                         model: GroupCinemas,
@@ -61,6 +65,7 @@ const getAllByIdGroupCinema = async (req, res) => {
         const lstCinemas = await Cinemas.findAll({
             where: {
                 idGroupCinema: id,
+                isActive: true
             },
             include: [
                 {
@@ -98,22 +103,12 @@ const getDetails = async (req, res) => {
     }
 }
 const deleteCinemas = async (req, res) => {
-    const { id } = req.params;
+    const { details } = req;
     try {
-        const cinemas = await Cinemas.findOne({
-            where: {
-                id
-            },
-            include: [
-                {
-                    model: GroupCinemas,
-                    as: 'group'
-                }
-            ]
-        });
-        cinemas.idGroupCinema = undefined;
-        await Cinemas.destroy({ where: { id } });
-        res.status(200).send(cinemas);
+        details.idGroupCinema = undefined;
+        details.isActive = false;
+        await details.save();
+        res.status(200).send(details);
     } catch (error) {
         res.status(500).send(error);
     }

@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Tickets.init({
-    price: DataTypes.FLOAT
+    price: DataTypes.FLOAT,
+    isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Tickets',

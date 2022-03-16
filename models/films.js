@@ -34,7 +34,8 @@ module.exports = (sequelize, DataTypes) => {
     rate: DataTypes.STRING,
     comingSoon: DataTypes.BOOLEAN,
     nowShowing: DataTypes.BOOLEAN,
-    showtime:DataTypes.DATE
+    showtime: DataTypes.DATE,
+    isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Films',

@@ -18,7 +18,8 @@ const getAll = async (req, res) => {
                 where: {
                     roomName: {
                         [Op.like]: `%${name}%`
-                    }
+                    },
+                    isActive: true
                 },
                 include: [
                     {
@@ -29,6 +30,9 @@ const getAll = async (req, res) => {
             });
         } else {
             lstRoom = await Rooms.findAll({
+                where: {
+                    isActive: true
+                },
                 include: [
                     {
                         model: Cinemas,
@@ -50,7 +54,8 @@ const getRoomByIDCinema = async (req, res) => {
     try {
         const result = await Rooms.findAll({
             where: {
-                idCinema: id
+                idCinema: id,
+                isActive: true
             },
             include: [
                 {
@@ -72,7 +77,7 @@ const getDetails = async (req, res) => {
     try {
         const roomDetails = await Rooms.findOne({
             where: {
-                id
+                id,
             },
             include: [
                 {
@@ -92,7 +97,8 @@ const deleteRoom = async (req, res) => {
     try {
         const roomDetails = await Rooms.findOne({
             where: {
-                id
+                id,
+                isActive: true
             },
             include: [
                 {
@@ -101,7 +107,8 @@ const deleteRoom = async (req, res) => {
                 }
             ]
         });
-        await Rooms.destroy({ where: { id } })
+        roomDetails.isActive = false;
+        await roomDetails.save();
         res.status(200).send(roomDetails)
     } catch (error) {
         res.status(500).send(error);

@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   ShowTimes.init({
-    showDate: DataTypes.DATE
+    showDate: DataTypes.DATE,
+    isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'ShowTimes',

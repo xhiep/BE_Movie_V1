@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Rooms.init({
     roomName: DataTypes.STRING,
-    maxSeat: DataTypes.INTEGER
+    maxSeat: DataTypes.INTEGER,
+    isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Rooms',

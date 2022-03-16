@@ -31,7 +31,8 @@ const getAll = async (req, res) => {
                 where: {
                     nameFilm: {
                         [Op.like]: `%${name}%`
-                    }
+                    },
+                    isActive: true
                 }
             });
         } else {
@@ -79,7 +80,8 @@ const getFilmByIDCinema = async (req, res) => {
 const deleteFilm = async (req, res) => {
     try {
         const filmDel = req.details;
-        await Films.destroy({ where: { id: filmDel.id } });
+        filmDel.isActive = false;
+        await filmDel.save();
         res.status(200).send(filmDel);
     } catch (error) {
         res.status(500).send(error);

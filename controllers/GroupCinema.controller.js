@@ -1,5 +1,4 @@
 const { GroupCinemas } = require('../models');
-const { PORT } = require('../utils/util');
 
 const create = async (req, res) => {
     const { file, body } = req;
@@ -21,7 +20,7 @@ const create = async (req, res) => {
 }
 const getAll = async (req, res) => {
     try {
-        const lstCinemas = await GroupCinemas.findAll();
+        const lstCinemas = await GroupCinemas.findAll({ where: { isActive: true } });
         res.status(200).send(lstCinemas);
     } catch (error) {
         res.status(500).send(error);
@@ -37,7 +36,8 @@ const getDetails = async (req, res) => {
 const deleteGrCinemas = async (req, res) => {
     try {
         const delCinemas = req.details;
-        await GroupCinemas.destroy({ where: { id: delCinemas.id } });
+        delCinemas.isActive = false;
+        await delCinemas.save();
         res.status(200).send({
             message: "Xóa Rạp thành công",
             data: delCinemas
@@ -50,7 +50,7 @@ const update = async (req, res) => {
     const { file, body, details } = req;
     const { groupName } = body;
     try {
-        const groupCinemaUpdate = req.details;
+        const groupCinemaUpdate = details;
         let logo;
         if (!file) {
             logo = groupCinemaUpdate.logo;

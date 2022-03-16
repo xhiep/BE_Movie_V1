@@ -27,6 +27,10 @@ module.exports = {
       price: {
         type: Sequelize.FLOAT
       },
+      isActive: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -1,5 +1,6 @@
-const { ShowTimes, Films, Cinemas, Rooms, sequelize } = require('../models');
+const { ShowTimes, Films, Cinemas, Rooms, GroupCinemas, sequelize } = require('../models');
 const { QueryTypes } = require('sequelize');
+
 const create = async (req, res) => {
     const { idFilm, showDate, idCinema, idRoom } = req.body;
     try {
@@ -22,10 +23,57 @@ const getAll = async (req, res) => {
         inner join rooms on showtimes.idRoom = rooms.id)
         inner join groupcinemas on cinemas.idGroupCinema = groupcinemas.id)
         inner join seats on showtimes.id = seats.idShowTime)
-        where films.nameFilm like '%${name}%'
+        where films.nameFilm like '%${name}%' and showtimes.isActive = true
         group by seats.idShowTime`, { type: QueryTypes.SELECT })
         res.status(200).send(listShowTimes);
 
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+const showtimesWithGroupCinemas = async (req, res) => {
+    const { idFilm } = req.query;
+    try {
+        const listGroupCinema = await sequelize.query(`select * from groupcinemas where isActive = true `, { type: QueryTypes.SELECT });
+        let hack = [];
+        for (const groupCinemas of listGroupCinema) {
+            const listCinemas = await sequelize.query(`
+            select * from cinemas where idGroupCinema = ${groupCinemas.id} and isActive = true`, {
+                type: QueryTypes.SELECT
+            });
+            for (const cinema of listCinemas) {
+                let listFilm;
+                cinema.listFilm = []
+                if (idFilm === '') {
+                    listFilm = await sequelize.query(`
+                    select distinct  films.id as idFilm,  films.nameFilm , films.imgFilm 
+                    from films 
+                    inner join showtimes on films.id = showtimes.idFilm
+                    where showtimes.idCinema = ${cinema.id}`, { type: QueryTypes.SELECT });
+                    cinema.listFilm = listFilm;
+                } else {
+                    listFilm = await sequelize.query(`
+                    select distinct  films.id as idFilm,  films.nameFilm , films.imgFilm 
+                    from films 
+                    inner join showtimes on films.id = showtimes.idFilm
+                    where showtimes.idCinema = ${cinema.id} and showtimes.idFilm = ${idFilm}
+                    `, { type: QueryTypes.SELECT });
+                    cinema.listFilm = listFilm;
+                }
+                for (const film of listFilm) {
+                    const lstShowDate = await sequelize.query(`select showtimes.id,  showDate
+                    from showtimes 
+                    inner join films on films.id = showtimes.idFilm
+                    inner join cinemas on cinemas.id = showtimes.idCinema
+                    where cinemas.id = ${cinema.id} and films.id = ${film.idFilm} and showtimes.isActive = true`, { type: QueryTypes.SELECT });
+                    film.lstShowDate = lstShowDate;
+                }
+
+            }
+            groupCinemas.listRap = listCinemas;
+            hack = [...hack, groupCinemas]
+        }
+        res.status(200).send(hack)
     } catch (error) {
         res.status(500).send(error);
     }
@@ -38,7 +86,7 @@ const getShowTimeWithIDCinemaIDFilm = async (req, res) => {
                 from showtimes 
                 inner join films on films.id = showtimes.idFilm
                 inner join cinemas on cinemas.id = showtimes.idCinema
-                where cinemas.id = ${idCinema} and films.id = ${idFilm}`, { type: QueryTypes.SELECT });
+                where showtimes.isActive = true and cinemas.id = ${idCinema} and films.id = ${idFilm}`, { type: QueryTypes.SELECT });
         res.status(200).send(lstShowDate);
     } catch (error) {
         res.status(500).send(error)
@@ -97,7 +145,8 @@ const deleteShowTimes = async (req, res) => {
                 }
             ]
         });
-        await ShowTimes.destroy({ where: { id: details.id } });
+        showTimeDelete.isActive = false;
+        await showTimeDelete.save();
         showTimeDelete.idFilm = undefined;
         showTimeDelete.idCinema = undefined;
         showTimeDelete.idRoom = undefined;
@@ -151,5 +200,6 @@ module.exports = {
     getDetails,
     deleteShowTimes,
     update,
-    getShowTimeWithIDCinemaIDFilm
+    getShowTimeWithIDCinemaIDFilm,
+    showtimesWithGroupCinemas
 }

@@ -28,7 +28,8 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         notEmpty: true
       }
-    }
+    },
+    isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'TypeUser',

@@ -1,3 +1,4 @@
+
 const { TypeUser } = require('../models');
 
 const createTypeUser = async (req, res) => {
@@ -20,7 +21,11 @@ const createTypeUser = async (req, res) => {
 }
 const getAll = async (req, res) => {
     try {
-        const listUserType = await TypeUser.findAll();
+        const listUserType = await TypeUser.findAll({
+            where: {
+                isActive: true
+            }
+        });
         res.status(200).send(listUserType);
     } catch (error) {
         res.status(500).send(error);
@@ -46,15 +51,13 @@ const getDetails = async (req, res) => {
 const deleteTypeUser = async (req, res) => {
     const { id } = req.params;
     try {
-        if (id == 1 || id == 2) {
+        if (id == 1 || id == 2 || id == 3) {
             res.status(403).send("Bạn Không được xóa Loại Người Dùng này");
         }
-        await TypeUser.destroy({
-            where: {
-                id
-            }
-        });
-        res.status(200).send(req.details);
+        const typeDelete = req.details;
+        typeDelete.isActive = false;
+        await typeDelete.save();
+        res.status(200).send(typeDelete);
     } catch (error) {
         res.status(500).send(error);
     }
@@ -63,7 +66,7 @@ const update = async (req, res) => {
     const { nameType, type } = req.body;
     try {
         const typeUserUpdate = req.details;
-        if (typeUserUpdate.id == 1 || typeUserUpdate.id == 2) {
+        if (typeUserUpdate.id == 1 || typeUserUpdate.id == 2 || typeUserUpdate.id == 3) {
             res.status(403).send("Bạn Không được cập nhật Loại Người Dùng này");
         }
         typeUserUpdate.nameType = nameType;

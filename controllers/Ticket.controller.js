@@ -4,25 +4,36 @@ const { QueryTypes } = require('sequelize');
 const create = async (req, res) => {
     const { userId, listTicket } = req.body;
     try {
-        let ticketSuccess = []
-        for (const ticket of listTicket) {
-            const seat = await Seats.findOne({ where: { id: ticket.id } });
-            if (seat.bookded) {
-                res.status(403).send("Ghế đã có người đặt");
-            } else {
-                const newTicket = await Tickets.create({ seatId: ticket.id, userId, price: ticket.price });
-                if (newTicket) {
-                    seat.idUser = userId;
-                    seat.bookded = true;
-                    await seat.save();
-                    await ticketSuccess.push(seat);
+        const checkUser = await Users.findOne({
+            where: {
+                id: userId,
+                isActive: true
+            }
+        });
+        if (checkUser) {
+            let ticketSuccess = []
+            for (const ticket of listTicket) {
+                const seat = await Seats.findOne({ where: { id: ticket.id } });
+                if (seat.bookded) {
+                    res.status(403).send("Ghế đã có người đặt");
+                } else {
+                    const newTicket = await Tickets.create({ seatId: ticket.id, userId, price: ticket.price });
+                    if (newTicket) {
+                        seat.idUser = userId;
+                        seat.bookded = true;
+                        await seat.save();
+                        await ticketSuccess.push(seat);
+                    }
                 }
             }
+            res.status(201).send({
+                message: "Đặt vé thành công",
+                data: ticketSuccess
+            })
+        } else {
+            res.status(400).send("Tài khoản tạm đã bị khóa")
         }
-        res.status(201).send({
-            message: "Đặt vé thành công",
-            data: ticketSuccess
-        })
+
     } catch (error) {
         res.status(500).send(error);
     }
@@ -82,8 +93,28 @@ const listTicketWithUser = async (req, res) => {
     }
 
 }
+const getToTalWithMonth = async (req, res) => {
+    try {
+        let arr = [];
+        for (let index = 1; index <= 12; index++) {
+            const result = await sequelize.query(`
+            select sum(price) as total from tickets where  month(createdAt) = ${index};
+            ` , { type: QueryTypes.SELECT });
+            let totalWithMonth = result[0];
+            if (totalWithMonth.total === null) {
+                totalWithMonth.total = 0
+            }
+            arr = [...arr, totalWithMonth]
+        }
+        res.status(200).send(arr)
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+
 module.exports = {
     create,
     getTicketByIdUser,
-    listTicketWithUser
+    listTicketWithUser,
+    getToTalWithMonth,
 }

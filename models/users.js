@@ -54,7 +54,8 @@ module.exports = (sequelize, DataTypes) => {
     isBlock: {
       defaultValue: false,
       type: DataTypes.BOOLEAN
-    }
+    },
+    isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Users',

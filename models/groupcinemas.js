@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   GroupCinemas.init({
     groupName: DataTypes.STRING,
-    logo: DataTypes.STRING
+    logo: DataTypes.STRING,
+    isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'GroupCinemas',

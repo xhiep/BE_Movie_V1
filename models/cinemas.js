@@ -1,6 +1,6 @@
 'use strict';
 const {
-  Model
+  Model, BOOLEAN
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Cinemas extends Model {
@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
   Cinemas.init({
     name: DataTypes.STRING,
     address: DataTypes.STRING,
-    logo: DataTypes.STRING
+    logo: DataTypes.STRING,
+    isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Cinemas',
