@@ -1,36 +1,16 @@
 "use strict";
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Films", {
+    await queryInterface.createTable("banners", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      nameFilm: {
+      image: {
         type: Sequelize.STRING,
-      },
-      trailer: {
-        type: Sequelize.STRING,
-      },
-      imgFilm: {
-        type: Sequelize.STRING,
-      },
-      description: {
-        type: Sequelize.TEXT,
-      },
-      rate: {
-        type: Sequelize.STRING,
-      },
-      comingSoon: {
-        type: Sequelize.BOOLEAN,
-      },
-      nowShowing: {
-        type: Sequelize.BOOLEAN,
-      },
-      showtime: {
-        type: Sequelize.DATE,
       },
       isActive: {
         type: Sequelize.BOOLEAN,
@@ -47,6 +27,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Films");
+    await queryInterface.dropTable("banners");
   },
 };
