@@ -18,7 +18,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       description: {
-        type: Sequelize.STRING(65535),
+        type: Sequelize.TEXT,
       },
       rate: {
         type: Sequelize.STRING,
