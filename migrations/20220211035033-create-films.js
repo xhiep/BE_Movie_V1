@@ -1,52 +1,52 @@
-'use strict';
+"use strict";
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Films', {
+    await queryInterface.createTable("Films", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       nameFilm: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       trailer: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       imgFilm: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(65535),
       },
       rate: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       comingSoon: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
       },
       nowShowing: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
       },
       showtime: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       isActive: {
         type: Sequelize.BOOLEAN,
-        defaultValue: true
+        defaultValue: true,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Films');
-  }
+    await queryInterface.dropTable("Films");
+  },
 };
