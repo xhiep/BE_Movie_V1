@@ -22,7 +22,7 @@ rootRouter.use("/rooms", roomRouter);
 rootRouter.use("/seats", seatRouter);
 rootRouter.use("/tickets", ticketRouter);
 rootRouter.use("/checkout", checkoutRouter);
-roomRouter.use("/banner", bannerRoute);
+rootRouter.use("/banners", bannerRoute);
 module.exports = {
   rootRouter,
 };

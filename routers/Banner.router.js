@@ -1,5 +1,5 @@
 const express = require("express");
-const { Banner } = require("../models");
+const { Banners } = require("../models");
 
 const {
   getAll,
@@ -19,7 +19,7 @@ bannerRoute.get(
   "/:id",
   authentication,
   authorize,
-  checkExists(Banner),
+  checkExists(Banners),
   getDetail
 );
 bannerRoute.post(
@@ -33,7 +33,7 @@ bannerRoute.put(
   "/:id",
   authentication,
   authorize,
-  checkExists(Banner),
+  checkExists(Banners),
   uploadImage("banner"),
   updateBanner
 );
@@ -42,7 +42,7 @@ bannerRoute.delete(
   "/:id",
   authentication,
   authorize,
-  checkExists(Banner),
+  checkExists(Banners),
   deleteBanner
 );
 

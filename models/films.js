@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Films extends Model {
     /**
@@ -11,34 +9,41 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ ShowTimes }) {
       // define association here
-      this.hasMany(ShowTimes, { foreignKey: 'idFilm', as: 'film' });
+      this.hasMany(ShowTimes, { foreignKey: "idFilm", as: "film" });
     }
   }
-  Films.init({
-    nameFilm: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
+  Films.init(
+    {
+      nameFilm: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      trailer: DataTypes.STRING,
+      imgFilm: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      actor: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      description: DataTypes.TEXT,
+      rate: DataTypes.STRING,
+      comingSoon: DataTypes.BOOLEAN,
+      nowShowing: DataTypes.BOOLEAN,
+      showtime: DataTypes.DATE,
+      isActive: DataTypes.BOOLEAN,
     },
-    trailer: DataTypes.STRING,
-    imgFilm: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
-    },
-    description: DataTypes.STRING,
-    rate: DataTypes.STRING,
-    comingSoon: DataTypes.BOOLEAN,
-    nowShowing: DataTypes.BOOLEAN,
-    showtime: DataTypes.DATE,
-    isActive: DataTypes.BOOLEAN
-  }, {
-    sequelize,
-    modelName: 'Films',
-  });
+    {
+      sequelize,
+      modelName: "Films",
+    }
+  );
   return Films;
 };
