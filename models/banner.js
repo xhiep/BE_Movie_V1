@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
-    modelName: 'banner',
+    modelName: 'Banners',
   });
   return banner;
 };
