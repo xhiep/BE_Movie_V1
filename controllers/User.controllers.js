@@ -240,7 +240,7 @@ const getUserWithShowTimeID = async (req, res) => {
                 select distinct seatName
                 from (seats
                 inner join users on users.id = seats.idUser)
-                where seats.idShowTime = 1`,
+                where seats.idShowTime = ${id}`,
       { type: QueryTypes.SELECT }
     );
     res.status(200).send({ lstUser, listSeat });

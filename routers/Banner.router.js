@@ -1,5 +1,5 @@
 const express = require("express");
-const { Banner } = require("../models");
+const { Banners } = require("../models");
 
 const {
   getAll,
@@ -7,6 +7,7 @@ const {
   createBanner,
   updateBanner,
   deleteBanner,
+  ChangeStatusBanner,
 } = require("../controllers/Banner.controller");
 const { authentication } = require("../middleware/auth/authentication");
 const { authorize } = require("../middleware/auth/authorize");
@@ -19,7 +20,7 @@ bannerRoute.get(
   "/:id",
   authentication,
   authorize,
-  checkExists(Banner),
+  checkExists(Banners),
   getDetail
 );
 bannerRoute.post(
@@ -33,16 +34,22 @@ bannerRoute.put(
   "/:id",
   authentication,
   authorize,
-  checkExists(Banner),
+  checkExists(Banners),
   uploadImage("banner"),
   updateBanner
 );
-
+bannerRoute.put(
+  "/status/:id",
+  authentication,
+  authorize,
+  checkExists(Banners),
+  ChangeStatusBanner
+);
 bannerRoute.delete(
   "/:id",
   authentication,
   authorize,
-  checkExists(Banner),
+  checkExists(Banners),
   deleteBanner
 );
 

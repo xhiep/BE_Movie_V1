@@ -16,39 +16,50 @@ const createBanner = async (req, res) => {
 };
 const getAll = async (req, res) => {
   try {
-    const lstBanner = await Banners.findAll({ where: { isActive: true } });
+    const lstBanner = await Banners.findAll();
     res.status(200).send(lstBanner);
   } catch (error) {
     res.status(500).send(error);
   }
 };
 const getDetail = async (req, res) => {
-  const { detail } = req;
+  const { details } = req;
   try {
-    res.status(200).send(detail);
+    res.status(200).send(details);
   } catch (error) {
     res.status(500).send(error);
   }
 };
 const deleteBanner = async (req, res) => {
-  const { detail } = req;
+  const { details } = req;
+  console.log(details);
   try {
-    detail.isActive = false;
-    await detail.save();
-    res.status(200).send(detail);
+    await details.destroy();
+    res.status(200).send(details);
   } catch (error) {
     res.status(500).send(error);
   }
 };
 const updateBanner = async (req, res) => {
-  const { detail, file } = req;
+  const { details, file } = req;
   try {
     if (file?.path) {
       const imgBanner = await file.path.replace(/\\/g, "/");
-      detail.image = imgBanner;
-      await detail.save();
-      res.status(200).send(detail);
+      details.image = imgBanner;
+      await details.save();
+      res.status(200).send(details);
     }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+const ChangeStatusBanner = async (req, res) => {
+  const { body, details } = req;
+  const { isActive } = body;
+  try {
+    details.isActive = isActive;
+    await details.save();
+    res.status(200).send(details);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -59,4 +70,5 @@ module.exports = {
   getDetail,
   deleteBanner,
   updateBanner,
+  ChangeStatusBanner,
 };
