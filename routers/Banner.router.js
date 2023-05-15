@@ -7,6 +7,7 @@ const {
   createBanner,
   updateBanner,
   deleteBanner,
+  ChangeStatusBanner,
 } = require("../controllers/Banner.controller");
 const { authentication } = require("../middleware/auth/authentication");
 const { authorize } = require("../middleware/auth/authorize");
@@ -37,7 +38,13 @@ bannerRoute.put(
   uploadImage("banner"),
   updateBanner
 );
-
+bannerRoute.put(
+  "/status/:id",
+  authentication,
+  authorize,
+  checkExists(Banners),
+  ChangeStatusBanner
+);
 bannerRoute.delete(
   "/:id",
   authentication,
